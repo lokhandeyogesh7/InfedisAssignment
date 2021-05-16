@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_home"
+    app:startDestination="@id/hostFragment">
+
+
+    <fragment
+        android:id="@+id/hostFragment"
+        android:name="com.example.infedistest.ui.main.view.fragments.HostFragment"
+        android:label="HostFragment" >
+        <action
+            android:id="@+id/action_hostFragment_to_newsFragment"
+            app:destination="@id/newsFragment" />
+        <action
+            android:id="@+id/action_hostFragment_to_bookFragment"
+            app:destination="@id/bookFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/newsFragment"
+        tools:layout="@layout/fragment_news"
+        android:name="com.example.infedistest.ui.main.view.fragments.NewsFragment"
+        android:label="NewsFragment" />
+    <fragment
+        android:id="@+id/bookFragment"
+        tools:layout="@layout/fragment_books"
+        android:name="com.example.infedistest.ui.main.view.fragments.BookFragment"
+        android:label="BookFragment" />
+</navigation>
