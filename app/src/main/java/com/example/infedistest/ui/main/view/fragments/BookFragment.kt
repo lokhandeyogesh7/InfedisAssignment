@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.infedistest.R
+import com.example.infedistest.data.model.booksresponse.Item
 import com.example.infedistest.data.repository.BooksRepository
 import com.example.infedistest.ui.base.ViewModelFactory
 import com.example.infedistest.ui.main.adapter.BooksAdapter
@@ -21,18 +22,11 @@ import com.example.infedistest.utils.Status
 import com.example.infedistest.utils.visible
 
 class BookFragment : Fragment() {
+    private lateinit var adapter: BooksAdapter
+    private var booksList = mutableListOf<Item>()
     lateinit var booksViewModel: BooksViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        booksViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(BooksRepository())
-        ).get(BooksViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,48 +44,60 @@ class BookFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
                     searchView.clearFocus()
-                    fetchBooks(it)
+                    booksViewModel.fetchBooks(it)
                 }
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
 
         })
+        createAdapter()
+        initViewModel()
+        showProgress()
+        setAdapter()
+        showError()
     }
 
-    private fun fetchBooks(it: String) {
-        booksViewModel.fetchBooks(it)
-        booksViewModel.books.observe(viewLifecycleOwner, {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    progressBar.visible(false)
-                    recyclerView.visible(true)
-                    it.data?.items?.let { response ->
-                        recyclerView.layoutManager =
-                            LinearLayoutManager(requireContext())
-                        val dividerItemDecoration = DividerItemDecoration(
-                            recyclerView.context,
-                            (recyclerView.layoutManager as LinearLayoutManager).orientation
-                        )
-                        recyclerView.addItemDecoration(dividerItemDecoration)
-                        val adapter = BooksAdapter(requireContext(), response)
-                        recyclerView.adapter = adapter
-                    }
-                }
-                Status.LOADING -> {
-                    progressBar.visible(true)
-                    recyclerView.visible(false)
-                }
-                Status.FAILED -> {
-                    progressBar.visible(false)
-                    recyclerView.visible(false)
-                    Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
+    private fun createAdapter() {
+        recyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+        val dividerItemDecoration = DividerItemDecoration(
+            recyclerView.context,
+            (recyclerView.layoutManager as LinearLayoutManager).orientation
+        )
+        recyclerView.addItemDecoration(dividerItemDecoration)
+        adapter = BooksAdapter(requireContext(), booksList)
+        recyclerView.adapter = adapter
+    }
+
+    private fun initViewModel() {
+        booksViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(BooksRepository())
+        ).get(BooksViewModel::class.java)
+    }
+
+    private fun showProgress() {
+        booksViewModel.progressBar.observe(viewLifecycleOwner, {
+            progressBar.visible(it)
         })
     }
+
+
+    private fun setAdapter() {
+        booksViewModel.books.observe(viewLifecycleOwner, {
+            booksList.clear()
+            booksList.addAll(it.items as MutableList<Item>)
+            adapter.notifyDataSetChanged()
+        })
+    }
+
+    fun showError() {
+        booksViewModel.error.observe(viewLifecycleOwner,{
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        })
+    }
+
 }

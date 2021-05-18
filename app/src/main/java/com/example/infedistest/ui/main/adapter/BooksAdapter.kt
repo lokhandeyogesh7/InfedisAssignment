@@ -27,7 +27,7 @@ class BooksAdapter(private val context: Context?, private val mData: List<Item>?
             holder.title_book.text = news.volumeInfo.title
             if (!news.volumeInfo.authors.isNullOrEmpty()) {
                 holder.author_book.text =
-                    Arrays.asList(news.volumeInfo.authors).joinToString { it.toString() }
+                    mutableListOf(news.volumeInfo.authors).joinToString { it.toString() }
             }
             holder.published_book.text = news.volumeInfo.publishedDate
             holder.ratings_book.text = news.volumeInfo.averageRating.toString()

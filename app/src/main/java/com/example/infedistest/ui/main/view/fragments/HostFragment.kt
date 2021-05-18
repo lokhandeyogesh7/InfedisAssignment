@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
 import com.example.infedistest.R
+import com.example.infedistest.ui.main.adapter.ViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 
 class HostFragment : Fragment() {

@@ -7,11 +7,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitClient {
+class RetrofitClient(val base_url: String) {
 
-    companion object {
+    //companion object {
         private var retrofit: Retrofit? = null
-        private var BASE_URL = "https://newsapi.org/"
+//        private var BASE_URL = "https://newsapi.org/"
 
         fun getHttpClient(): OkHttpClient {
             val logging = HttpLoggingInterceptor()
@@ -27,7 +27,7 @@ class RetrofitClient {
          fun getRetrofitInstance(): Retrofit {
             if (retrofit == null) {
                 retrofit = Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(base_url)
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(getHttpClient())
@@ -40,4 +40,4 @@ class RetrofitClient {
             return getRetrofitInstance().create(ApiService::class.java)
         }
     }
-}
+//}
